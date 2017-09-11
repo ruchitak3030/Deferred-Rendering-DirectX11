@@ -1,0 +1,4 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (DX11Starter.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Game.cpp
+  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\Normal Map Demo Complete\Normal Map Starter\Debug\Deferred Rendering.exe
+  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\Normal Map Demo Complete\Normal Map Starter\Debug\Deferred Rendering.pdb (Partial PDB)
