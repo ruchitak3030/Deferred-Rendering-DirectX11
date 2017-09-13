@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "GameEntity.h"
+#include "Renderer.h"
 
 class Game 
 	: public DXCore
@@ -43,6 +44,10 @@ private:
 	GameEntity* sphere1;
 	GameEntity* sphere2;
 	GameEntity* sphere3;
+
+
+	Renderer* renderer;
+	
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadShaders(); 

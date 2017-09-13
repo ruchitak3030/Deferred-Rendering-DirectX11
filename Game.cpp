@@ -42,15 +42,11 @@ Game::~Game()
 	delete vertexShader;
 	delete pixelShader;
 
-	delete sphere;
-	delete sphere1;
-	delete sphere2;
-	delete sphere3;
-
 	// Clean up resources
 	for(auto& e : entities) delete e;
 	for(auto& m : meshes) delete m;
 	delete camera;
+	delete renderer;
 }
 
 
@@ -207,87 +203,90 @@ void Game::Draw(float deltaTime, float totalTime)
 		1.0f,
 		0);
 
-	vertexShader->SetShader();
-	pixelShader->SetShader();
 
-	pixelShader->SetFloat3("DirLightDirection", XMFLOAT3(1, 0, 0));
-	pixelShader->SetFloat4("DirLightColor", XMFLOAT4(0.8f, 0.8f, 0.8f, 1));
-	pixelShader->SetFloat3("PointLightPosition", XMFLOAT3(3, 0, 0));
-	pixelShader->SetFloat4("PointLightColor", XMFLOAT4(1, 0.3f, 0.3f, 1));
-	pixelShader->SetFloat3("CameraPosition", camera->GetPosition());
+
+	renderer->SetRenderer(sphere, camera, vertexBuffer, indexBuffer, vertexShader, pixelShader, context);
+	//vertexShader->SetShader();
+	//pixelShader->SetShader();
+
+	//pixelShader->SetFloat3("DirLightDirection", XMFLOAT3(1, 0, 0));
+	//pixelShader->SetFloat4("DirLightColor", XMFLOAT4(0.8f, 0.8f, 0.8f, 1));
+	//pixelShader->SetFloat3("PointLightPosition", XMFLOAT3(3, 0, 0));
+	//pixelShader->SetFloat4("PointLightColor", XMFLOAT4(1, 0.3f, 0.3f, 1));
+	//pixelShader->SetFloat3("CameraPosition", camera->GetPosition());
 
 	pixelShader->SetSamplerState("Sampler", sampler);
 	pixelShader->SetShaderResourceView("Texture", textureSRV);
 	pixelShader->SetShaderResourceView("NormalMap", normalMapSRV);
 
-	pixelShader->CopyAllBufferData();
-	pixelShader->SetShader();
+	//pixelShader->CopyAllBufferData();
+	//pixelShader->SetShader();
 
-	ID3D11Buffer* vb = sphere->GetMesh()->GetVertexBuffer();
-	ID3D11Buffer* ib = sphere->GetMesh()->GetIndexBuffer();
+	//ID3D11Buffer* vb = sphere->GetMesh()->GetVertexBuffer();
+	//ID3D11Buffer* ib = sphere->GetMesh()->GetIndexBuffer();
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-
-
-	vertexShader->SetMatrix4x4("world", sphere->GetWorldMatrix());
-	vertexShader->SetMatrix4x4("view", camera->GetView());
-	vertexShader->SetMatrix4x4("projection", camera->GetProjection());
-
-	vertexShader->CopyAllBufferData();
-
-	context->DrawIndexed(sphere->GetMesh()->GetIndexCount(), 0, 0);
-
-	ID3D11Buffer* vb1 = sphere1->GetMesh()->GetVertexBuffer();
-	ID3D11Buffer* ib1 = sphere1->GetMesh()->GetIndexBuffer();
-
-	context->IASetVertexBuffers(0, 1, &vb1, &stride, &offset);
-	context->IASetIndexBuffer(ib1, DXGI_FORMAT_R32_UINT, 0);
+	//UINT stride = sizeof(Vertex);
+	//UINT offset = 0;
+	//context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+	//context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
 
 
-	vertexShader->SetMatrix4x4("world", sphere1->GetWorldMatrix());
-	vertexShader->SetMatrix4x4("view", camera->GetView());
-	vertexShader->SetMatrix4x4("projection", camera->GetProjection());
+	//vertexShader->SetMatrix4x4("world", sphere->GetWorldMatrix());
+	//vertexShader->SetMatrix4x4("view", camera->GetView());
+	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
 
-	vertexShader->CopyAllBufferData();
+	//vertexShader->CopyAllBufferData();
 
-	context->DrawIndexed(sphere1->GetMesh()->GetIndexCount(), 0, 0);
+	//context->DrawIndexed(sphere->GetMesh()->GetIndexCount(), 0, 0);
 
+	//ID3D11Buffer* vb1 = sphere1->GetMesh()->GetVertexBuffer();
+	//ID3D11Buffer* ib1 = sphere1->GetMesh()->GetIndexBuffer();
 
-	//Entity 3
-	ID3D11Buffer* vb2 = sphere2->GetMesh()->GetVertexBuffer();
-	ID3D11Buffer* ib2 = sphere2->GetMesh()->GetIndexBuffer();
-
-	context->IASetVertexBuffers(0, 1, &vb2, &stride, &offset);
-	context->IASetIndexBuffer(ib2, DXGI_FORMAT_R32_UINT, 0);
+	//context->IASetVertexBuffers(0, 1, &vb1, &stride, &offset);
+	//context->IASetIndexBuffer(ib1, DXGI_FORMAT_R32_UINT, 0);
 
 
-	vertexShader->SetMatrix4x4("world", sphere2->GetWorldMatrix());
-	vertexShader->SetMatrix4x4("view", camera->GetView());
-	vertexShader->SetMatrix4x4("projection", camera->GetProjection());
+	//vertexShader->SetMatrix4x4("world", sphere1->GetWorldMatrix());
+	//vertexShader->SetMatrix4x4("view", camera->GetView());
+	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
 
-	vertexShader->CopyAllBufferData();
+	//vertexShader->CopyAllBufferData();
 
-	context->DrawIndexed(sphere2->GetMesh()->GetIndexCount(), 0, 0);
-
-
-	//Entity4
-	ID3D11Buffer* vb3 = sphere3->GetMesh()->GetVertexBuffer();
-	ID3D11Buffer* ib3 = sphere3->GetMesh()->GetIndexBuffer();
-
-	context->IASetVertexBuffers(0, 1, &vb3, &stride, &offset);
-	context->IASetIndexBuffer(ib3, DXGI_FORMAT_R32_UINT, 0);
+	//context->DrawIndexed(sphere1->GetMesh()->GetIndexCount(), 0, 0);
 
 
-	vertexShader->SetMatrix4x4("world", sphere3->GetWorldMatrix());
-	vertexShader->SetMatrix4x4("view", camera->GetView());
-	vertexShader->SetMatrix4x4("projection", camera->GetProjection());
+	////Entity 3
+	//ID3D11Buffer* vb2 = sphere2->GetMesh()->GetVertexBuffer();
+	//ID3D11Buffer* ib2 = sphere2->GetMesh()->GetIndexBuffer();
 
-	vertexShader->CopyAllBufferData();
+	//context->IASetVertexBuffers(0, 1, &vb2, &stride, &offset);
+	//context->IASetIndexBuffer(ib2, DXGI_FORMAT_R32_UINT, 0);
 
-	context->DrawIndexed(sphere3->GetMesh()->GetIndexCount(), 0, 0);
+
+	//vertexShader->SetMatrix4x4("world", sphere2->GetWorldMatrix());
+	//vertexShader->SetMatrix4x4("view", camera->GetView());
+	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
+
+	//vertexShader->CopyAllBufferData();
+
+	//context->DrawIndexed(sphere2->GetMesh()->GetIndexCount(), 0, 0);
+
+
+	////Entity4
+	//ID3D11Buffer* vb3 = sphere3->GetMesh()->GetVertexBuffer();
+	//ID3D11Buffer* ib3 = sphere3->GetMesh()->GetIndexBuffer();
+
+	//context->IASetVertexBuffers(0, 1, &vb3, &stride, &offset);
+	//context->IASetIndexBuffer(ib3, DXGI_FORMAT_R32_UINT, 0);
+
+
+	//vertexShader->SetMatrix4x4("world", sphere3->GetWorldMatrix());
+	//vertexShader->SetMatrix4x4("view", camera->GetView());
+	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
+
+	//vertexShader->CopyAllBufferData();
+
+	//context->DrawIndexed(sphere3->GetMesh()->GetIndexCount(), 0, 0);
 
 	
 
