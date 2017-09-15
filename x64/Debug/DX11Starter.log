@@ -1,5 +1,5 @@
-﻿  Renderer.cpp
-z:\igmprofile\desktop\deferred-rendering-directx11\simpleshader.h(102): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
-z:\igmprofile\desktop\deferred-rendering-directx11\simpleshader.h(106): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
-  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\Deferred-Rendering-DirectX11\x64\Debug\Deferred Rendering.exe
-  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\Deferred-Rendering-DirectX11\x64\Debug\Deferred Rendering.pdb (Partial PDB)
+﻿  Game.cpp
+c:\users\ruchi\desktop\deferred-rendering-directx11\simpleshader.h(102): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+c:\users\ruchi\desktop\deferred-rendering-directx11\simpleshader.h(106): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+  DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\x64\Debug\Deferred Rendering.exe
+  DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\x64\Debug\Deferred Rendering.pdb (Partial PDB)

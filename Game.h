@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "GameEntity.h"
 #include "Renderer.h"
+#include "Material.h"
 
 class Game 
 	: public DXCore
@@ -44,19 +45,33 @@ private:
 	GameEntity* sphere1;
 	GameEntity* sphere2;
 	GameEntity* sphere3;
+	GameEntity* sphere4;
+	GameEntity* sphere5;
+
+	GameEntity* plane1;
+	GameEntity* plane2;
+	GameEntity* plane3;
+	GameEntity* plane4;
 
 
-	Renderer* renderer;
+	Renderer renderer;
+
+	//material class objects
+	Material* sphereMaterial;
+	Material* planeMaterial;
 	
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadShaders(); 
 	void CreateMatrices();
 	void CreateBasicGeometry();
+	void CreateMaterials();
 
 	// Texture related DX stuff
-	ID3D11ShaderResourceView* textureSRV;
-	ID3D11ShaderResourceView* normalMapSRV;
+	ID3D11ShaderResourceView* sphereTextureSRV;
+	ID3D11ShaderResourceView* sphereNormalMapSRV;
+	ID3D11ShaderResourceView* planeTextureSRV;
+	ID3D11ShaderResourceView* planeNormalMapSRV;
 	ID3D11SamplerState* sampler;
 
 	// Buffers to hold actual geometry data

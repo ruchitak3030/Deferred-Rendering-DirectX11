@@ -35,8 +35,8 @@ Game::~Game()
 	if (vertexBuffer) { vertexBuffer->Release(); }
 	if (indexBuffer) { indexBuffer->Release(); }
 	sampler->Release();
-	textureSRV->Release();
-	normalMapSRV->Release();
+	sphereTextureSRV->Release();
+	sphereNormalMapSRV->Release();
 
 	
 	delete vertexShader;
@@ -46,7 +46,7 @@ Game::~Game()
 	for(auto& e : entities) delete e;
 	for(auto& m : meshes) delete m;
 	delete camera;
-	delete renderer;
+	
 }
 
 
@@ -54,36 +54,10 @@ void Game::Init()
 {
 	
 	LoadShaders();
+	CreateMaterials();
 	CreateMatrices();
 	CreateBasicGeometry();
-
-	// Load texture stuff
-	HRESULT result = CreateWICTextureFromFile(
-		device,
-		context, // If I provide the context, it will auto-generate Mipmaps
-		L"Debug/Textures/rock.jpg",
-		0, // We don't actually need the texture reference
-		&textureSRV);
-
-
-	result = CreateWICTextureFromFile(
-		device,
-		context, // If I provide the context, it will auto-generate Mipmaps
-		L"Debug/Textures/rockNormals.jpg",
-		0, // We don't actually need the texture reference
-		&normalMapSRV);
-
-	D3D11_SAMPLER_DESC samplerDesc = {};
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	samplerDesc.MaxAnisotropy = 16;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	
-	device->CreateSamplerState(&samplerDesc, &sampler);
-
-
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -97,7 +71,6 @@ void Game::LoadShaders()
 	pixelShader = new SimplePixelShader(device, context);
 	if(!pixelShader->LoadShaderFile(L"Debug/PixelShader.cso"))	
 		pixelShader->LoadShaderFile(L"PixelShader.cso");
-
 	
 }
 
@@ -117,38 +90,105 @@ void Game::CreateBasicGeometry()
 	Mesh* sphereMesh1 = new Mesh("Models/sphere.obj", device);
 	Mesh* sphereMesh2 = new Mesh("Models/sphere.obj", device);
 	Mesh* sphereMesh3 = new Mesh("Models/sphere.obj", device);
+	Mesh* sphereMesh4 = new Mesh("Models/sphere.obj", device);
+	Mesh* sphereMesh5 = new Mesh("Models/sphere.obj", device);
+	Mesh* planeMesh1 = new Mesh("Models/cube.obj", device);
+	Mesh* planeMesh2 = new Mesh("Models/cube.obj", device);
+	Mesh* planeMesh3 = new Mesh("Models/cube.obj", device);
+	Mesh* planeMesh4 = new Mesh("Models/cube.obj", device);
 
 	meshes.push_back(sphereMesh);
 	meshes.push_back(sphereMesh1);
 	meshes.push_back(sphereMesh2);
 	meshes.push_back(sphereMesh3);
+	meshes.push_back(sphereMesh4);
+	meshes.push_back(sphereMesh5);
+	meshes.push_back(planeMesh1);
+	meshes.push_back(planeMesh2);
+	meshes.push_back(planeMesh3);
+	meshes.push_back(planeMesh4);
 
 		
-	sphere = new GameEntity(sphereMesh);
-	sphere1 = new GameEntity(sphereMesh1);
-	sphere2 = new GameEntity(sphereMesh2);
-	sphere3 = new GameEntity(sphereMesh3);
+	sphere = new GameEntity(sphereMesh, sphereMaterial);
+	sphere1 = new GameEntity(sphereMesh1,sphereMaterial);
+	sphere2 = new GameEntity(sphereMesh2, sphereMaterial);
+	sphere3 = new GameEntity(sphereMesh3, sphereMaterial);
+	sphere4 = new GameEntity(sphereMesh4, sphereMaterial);
+	sphere5 = new GameEntity(sphereMesh5, sphereMaterial);
+	plane1 = new GameEntity(planeMesh1, planeMaterial);
+	plane2 = new GameEntity(planeMesh2, planeMaterial);
+	plane3 = new GameEntity(planeMesh3, planeMaterial);
+	plane4 = new GameEntity(planeMesh4, planeMaterial);
 
 	entities.push_back(sphere);
 	entities.push_back(sphere1);
 	entities.push_back(sphere2);
 	entities.push_back(sphere3);
+	entities.push_back(sphere4);
+	entities.push_back(sphere5);
+	entities.push_back(plane1);
+	entities.push_back(plane2);
+	entities.push_back(plane3);
+	entities.push_back(plane4);
 	
 
 	sphere->SetScale(1.0f,1.0f, 1.0f);
-	sphere->SetPosition(1.0f, 0.0f, 0.0f);
+	sphere->SetPosition(2.0f, -2.0f, 0.0f);
 
 
 	sphere1->SetScale(1.0f, 1.0f, 1.0f);
-	sphere1->SetPosition(1.0f, 0.0f, 2.0f);
+	sphere1->SetPosition(2.0f, -2.0f, 2.0f);
 
 	sphere2->SetScale(1.0f, 1.0f, 1.0f);
-	sphere2->SetPosition(-1.0f, 0.0f, 1.0f);
+	sphere2->SetPosition(0.0f, -2.0f, 0.0f);
 
 	sphere3->SetScale(1.0f, 1.0f, 1.0f);
-	sphere3->SetPosition(-1.0f, 0.0f, 4.0f);
+	sphere3->SetPosition(0.0f, -2.0f, 2.0f);
+
+	sphere4->SetScale(1.0f, 1.0f, 1.0f);
+	sphere4->SetPosition(-2.0f, -2.0f, 0.0f);
+
+	sphere5->SetScale(1.0f, 1.0f, 1.0f);
+	sphere5->SetPosition(-2.0f, -2.0f, 2.0f);
+
+	plane1->SetScale(3.0f, 0.01f, 3.0f);
+	plane1->SetPosition(0.0f, -3.0f, 0.0f);
+
+	plane2->SetScale(0.01f, 3.0f, 3.0f);
+	plane2->SetPosition(3.0f, -2.0f, 0.0f);
+
+	plane3->SetScale(0.01f, 3.0f, 3.0f);
+	plane3->SetPosition(-3.0f, -2.0f, 0.0f);
+
+	plane4->SetScale(5.0f, 3.0f, 0.01f);
+	plane4->SetPosition(0.0f, -2.0f, 2.5f);
+
 
 	currentEntity = 0;
+}
+
+void Game::CreateMaterials()
+{
+	// Load texture stuff
+	CreateWICTextureFromFile(device,context, L"Debug/Textures/rock.jpg", 0, &sphereTextureSRV);
+	CreateWICTextureFromFile(device,context, L"Debug/Textures/rockNormals.jpg",0, &sphereNormalMapSRV);
+
+	CreateWICTextureFromFile(device, context, L"Debug/Textures/rusty.jpg", 0, &planeTextureSRV);
+	CreateWICTextureFromFile(device, context, L"Debug/Textures/rustySpec.png", 0, &planeNormalMapSRV);
+
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.MaxAnisotropy = 16;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	device->CreateSamplerState(&samplerDesc, &sampler);
+
+
+	sphereMaterial = new Material(vertexShader, pixelShader, sphereTextureSRV, sphereNormalMapSRV, sampler);
+	planeMaterial = new Material(vertexShader, pixelShader, planeTextureSRV, planeNormalMapSRV, sampler);
 }
 
 
@@ -173,22 +213,11 @@ void Game::Update(float deltaTime, float totalTime)
 	
 	camera->Update(deltaTime);
 
-	/*bool currentTab = (GetAsyncKeyState(VK_TAB) & 0x8000) != 0;
-	if (currentTab && !prevTab)
-		currentEntity = (currentEntity + 1) % entities.size();
-	prevTab = currentTab;*/
-
-
-	/*entities[currentEntity]->Rotate(0, deltaTime * 0.2f, 0);
-	
-	entities[currentEntity]->UpdateWorldMatrix();*/
-
-	sphere->UpdateWorldMatrix();
-	sphere1->UpdateWorldMatrix();
-	sphere2->UpdateWorldMatrix();
-	sphere3->UpdateWorldMatrix();
-
-	
+	for (int i = 0; i < entities.size(); i++)
+	{
+		entities[i]->UpdateWorldMatrix();
+	}
+		
 }
 
 void Game::Draw(float deltaTime, float totalTime)
@@ -203,93 +232,17 @@ void Game::Draw(float deltaTime, float totalTime)
 		1.0f,
 		0);
 
-
-
-	renderer->SetRenderer(sphere, camera, vertexBuffer, indexBuffer, vertexShader, pixelShader, context);
-	//vertexShader->SetShader();
-	//pixelShader->SetShader();
-
-	//pixelShader->SetFloat3("DirLightDirection", XMFLOAT3(1, 0, 0));
-	//pixelShader->SetFloat4("DirLightColor", XMFLOAT4(0.8f, 0.8f, 0.8f, 1));
-	//pixelShader->SetFloat3("PointLightPosition", XMFLOAT3(3, 0, 0));
-	//pixelShader->SetFloat4("PointLightColor", XMFLOAT4(1, 0.3f, 0.3f, 1));
-	//pixelShader->SetFloat3("CameraPosition", camera->GetPosition());
-
-	pixelShader->SetSamplerState("Sampler", sampler);
-	pixelShader->SetShaderResourceView("Texture", textureSRV);
-	pixelShader->SetShaderResourceView("NormalMap", normalMapSRV);
-
-	//pixelShader->CopyAllBufferData();
-	//pixelShader->SetShader();
-
-	//ID3D11Buffer* vb = sphere->GetMesh()->GetVertexBuffer();
-	//ID3D11Buffer* ib = sphere->GetMesh()->GetIndexBuffer();
-
-	//UINT stride = sizeof(Vertex);
-	//UINT offset = 0;
-	//context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	//context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-
-
-	//vertexShader->SetMatrix4x4("world", sphere->GetWorldMatrix());
-	//vertexShader->SetMatrix4x4("view", camera->GetView());
-	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
-
-	//vertexShader->CopyAllBufferData();
-
-	//context->DrawIndexed(sphere->GetMesh()->GetIndexCount(), 0, 0);
-
-	//ID3D11Buffer* vb1 = sphere1->GetMesh()->GetVertexBuffer();
-	//ID3D11Buffer* ib1 = sphere1->GetMesh()->GetIndexBuffer();
-
-	//context->IASetVertexBuffers(0, 1, &vb1, &stride, &offset);
-	//context->IASetIndexBuffer(ib1, DXGI_FORMAT_R32_UINT, 0);
-
-
-	//vertexShader->SetMatrix4x4("world", sphere1->GetWorldMatrix());
-	//vertexShader->SetMatrix4x4("view", camera->GetView());
-	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
-
-	//vertexShader->CopyAllBufferData();
-
-	//context->DrawIndexed(sphere1->GetMesh()->GetIndexCount(), 0, 0);
-
-
-	////Entity 3
-	//ID3D11Buffer* vb2 = sphere2->GetMesh()->GetVertexBuffer();
-	//ID3D11Buffer* ib2 = sphere2->GetMesh()->GetIndexBuffer();
-
-	//context->IASetVertexBuffers(0, 1, &vb2, &stride, &offset);
-	//context->IASetIndexBuffer(ib2, DXGI_FORMAT_R32_UINT, 0);
-
-
-	//vertexShader->SetMatrix4x4("world", sphere2->GetWorldMatrix());
-	//vertexShader->SetMatrix4x4("view", camera->GetView());
-	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
-
-	//vertexShader->CopyAllBufferData();
-
-	//context->DrawIndexed(sphere2->GetMesh()->GetIndexCount(), 0, 0);
-
-
-	////Entity4
-	//ID3D11Buffer* vb3 = sphere3->GetMesh()->GetVertexBuffer();
-	//ID3D11Buffer* ib3 = sphere3->GetMesh()->GetIndexBuffer();
-
-	//context->IASetVertexBuffers(0, 1, &vb3, &stride, &offset);
-	//context->IASetIndexBuffer(ib3, DXGI_FORMAT_R32_UINT, 0);
-
-
-	//vertexShader->SetMatrix4x4("world", sphere3->GetWorldMatrix());
-	//vertexShader->SetMatrix4x4("view", camera->GetView());
-	//vertexShader->SetMatrix4x4("projection", camera->GetProjection());
-
-	//vertexShader->CopyAllBufferData();
-
-	//context->DrawIndexed(sphere3->GetMesh()->GetIndexCount(), 0, 0);
+	vertexShader->SetShader();
+	vertexShader->SetMatrix4x4("view", camera->GetView());
+	vertexShader->SetMatrix4x4("projection", camera->GetProjection());
 
 	
 
+	for (int i = 0; i < entities.size(); i++)
+	{
+		renderer.SetRenderer(entities[i], camera, vertexBuffer, indexBuffer, vertexShader, pixelShader, context);
+	}
+	
 	swapChain->Present(0, 0);
 }
 

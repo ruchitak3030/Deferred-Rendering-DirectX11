@@ -2,9 +2,10 @@
 
 using namespace DirectX;
 
-GameEntity::GameEntity(Mesh* mesh)
+GameEntity::GameEntity(Mesh* mesh, Material* material)
 {
 	this->mesh = mesh;
+	_material = material;
 
 	XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity());
 	position = XMFLOAT3(0, 0, 0);

@@ -2,11 +2,12 @@
 
 #include <DirectXMath.h>
 #include "Mesh.h"
+#include "Material.h"
 
 class GameEntity
 {
 public:
-	GameEntity(Mesh* mesh);
+	GameEntity(Mesh* mesh, Material* material);
 	~GameEntity(void);
 
 	void UpdateWorldMatrix();
@@ -20,9 +21,11 @@ public:
 
 	Mesh* GetMesh() { return mesh; }
 	DirectX::XMFLOAT4X4 GetWorldMatrix() { return worldMatrix; }
+	Material* GetMaterial() { return _material; }
 private:
 
 	Mesh* mesh;
+	Material* _material;
 
 	DirectX::XMFLOAT4X4 worldMatrix;
 	DirectX::XMFLOAT3 position;
