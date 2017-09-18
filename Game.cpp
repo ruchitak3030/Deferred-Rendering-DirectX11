@@ -165,70 +165,6 @@ void Game::CreateBasicGeometry()
 
 
 	currentEntity = 0;
-
-	VertexPosNormTex PlaneVertices[4] =
-	{
-		{ XMFLOAT3(-0.5f, 0.0f, 0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0, 0.0f) },
-		{ XMFLOAT3(0.5f, 0.0f, 0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0, 0.0f) },
-		{ XMFLOAT3(-0.5f, 0.0f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0, 1.0f) },
-		{ XMFLOAT3(-0.5f, 0.0f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0, 1.0f) }
-
-	};
-
-	WORD PlaneIndices[6] = { 0,1,3,1,2,3 };
-
-	PlaneInstanceData* planeInstanceData = (PlaneInstanceData*)_aligned_malloc(sizeof(PlaneInstanceData) * NumInstances, 16);
-
-	float scalePlane = 20.0f;
-	float translateOffset = scalePlane / 2.0f;
-	XMMATRIX scaleMatrix = XMMatrixScaling(scalePlane, 1.0f, scalePlane);
-	XMMATRIX translateMatrix = XMMatrixTranslation(0, 0, 0);
-	XMMATRIX rotateMatrix = XMMatrixRotationX(0.0f);
-
-	// Floor plane.
-	XMMATRIX worldMatrix = scaleMatrix * rotateMatrix * translateMatrix;
-	planeInstanceData[0].WorldMatrix = worldMatrix;
-	planeInstanceData[0].InverseTransposeWorldMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
-
-	// Back wall plane.
-	translateMatrix = XMMatrixTranslation(0, translateOffset, translateOffset);
-	rotateMatrix = XMMatrixRotationX(XMConvertToRadians(-90));
-	worldMatrix = scaleMatrix * rotateMatrix * translateMatrix;
-
-	planeInstanceData[1].WorldMatrix = worldMatrix;
-	planeInstanceData[1].InverseTransposeWorldMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
-
-	// Ceiling plane.
-	translateMatrix = XMMatrixTranslation(0, translateOffset * 2.0f, 0);
-	rotateMatrix = XMMatrixRotationX(XMConvertToRadians(180));
-	worldMatrix = scaleMatrix * rotateMatrix * translateMatrix;
-
-	planeInstanceData[2].WorldMatrix = worldMatrix;
-	planeInstanceData[2].InverseTransposeWorldMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
-
-	// Front wall plane.
-	translateMatrix = XMMatrixTranslation(0, translateOffset, -translateOffset);
-	rotateMatrix = XMMatrixRotationX(XMConvertToRadians(90));
-	worldMatrix = scaleMatrix * rotateMatrix * translateMatrix;
-
-	planeInstanceData[3].WorldMatrix = worldMatrix;
-	planeInstanceData[3].InverseTransposeWorldMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
-
-	// Left wall plane.
-	translateMatrix = XMMatrixTranslation(-translateOffset, translateOffset, 0);
-	rotateMatrix = XMMatrixRotationZ(XMConvertToRadians(-90));
-	worldMatrix = scaleMatrix * rotateMatrix * translateMatrix;
-
-	planeInstanceData[4].WorldMatrix = worldMatrix;
-	planeInstanceData[4].InverseTransposeWorldMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
-
-	// Right wall plane.
-	translateMatrix = XMMatrixTranslation(translateOffset, translateOffset, 0);
-	rotateMatrix = XMMatrixRotationZ(XMConvertToRadians(90));
-	worldMatrix = scaleMatrix * rotateMatrix * translateMatrix;
-
-	planeInstanceData[5].WorldMatrix = worldMatrix;
-	planeInstanceData[5].InverseTransposeWorldMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
 }
 
 void Game::CreateMaterials()
@@ -250,32 +186,9 @@ void Game::CreateMaterials()
 
 	device->CreateSamplerState(&samplerDesc, &sampler);
 
+
 	sphereMaterial = new Material(vertexShader, pixelShader, sphereTextureSRV, sphereNormalMapSRV, sampler);
 	planeMaterial = new Material(vertexShader, pixelShader, planeTextureSRV, planeNormalMapSRV, sampler);
-	
-	MaterialProperties defaultMaterial;
-	materialProperties.push_back(defaultMaterial);
-
-	MaterialProperties greenMaterial;
-	greenMaterial.Material.Ambient = XMFLOAT4(0.07568f, 0.61424f, 0.07568f, 1.0f);
-	greenMaterial.Material.Diffuse = XMFLOAT4(0.07568f, 0.61424f, 0.07568f, 1.0f);
-	greenMaterial.Material.Specular = XMFLOAT4(0.07568f, 0.61424f, 0.07568f, 1.0f);
-	greenMaterial.Material.SpecularPower = 76.8f;
-	materialProperties.push_back(greenMaterial);
-
-	MaterialProperties redPlasticMaterial;
-	redPlasticMaterial.Material.Diffuse = XMFLOAT4(0.6f, 0.1f, 0.1f, 1.0f);
-	redPlasticMaterial.Material.Specular = XMFLOAT4(1.0f, 0.2f, 0.2f, 1.0f);
-	redPlasticMaterial.Material.SpecularPower = 32.0f;
-	materialProperties.push_back(redPlasticMaterial);
-
-	MaterialProperties pearlMaterial;
-	pearlMaterial.Material.Ambient = XMFLOAT4(0.25f, 0.20725f, 0.20725f, 1.0f);
-	pearlMaterial.Material.Diffuse = XMFLOAT4(1.0f, 0.829f, 0.829f, 1.0f);
-	pearlMaterial.Material.Specular = XMFLOAT4(0.296648f, 0.296648f, 0.296648f, 1.0f);
-	pearlMaterial.Material.SpecularPower = 11.264f;
-	materialProperties.push_back(pearlMaterial);
-
 }
 
 
@@ -284,6 +197,8 @@ void Game::OnResize()
 {
 	
 	DXCore::OnResize();
+
+	
 	if( camera ) 
 		camera->UpdateProjectionMatrix((float)width / height);
 }
