@@ -1,5 +1,10 @@
-﻿  Game.cpp
+﻿  Material.cpp
 c:\users\ruchi\desktop\deferred-rendering-directx11\simpleshader.h(102): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
 c:\users\ruchi\desktop\deferred-rendering-directx11\simpleshader.h(106): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+  Game.cpp
+c:\users\ruchi\desktop\deferred-rendering-directx11\simpleshader.h(102): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+c:\users\ruchi\desktop\deferred-rendering-directx11\simpleshader.h(106): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+  Generating Code...
+  LINK : C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\x64\Debug\Deferred Rendering.exe not found or not built by the last incremental link; performing full link
   DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\x64\Debug\Deferred Rendering.exe
   DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\x64\Debug\Deferred Rendering.pdb (Partial PDB)

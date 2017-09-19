@@ -132,9 +132,8 @@ void Game::CreateBasicGeometry()
 	entities.push_back(plane4);
 	
 
-	sphere->SetScale(1.0f,1.0f, 1.0f);
+	sphere->SetScale(1.0f, 1.0f, 1.0f);
 	sphere->SetPosition(2.0f, -2.0f, 0.0f);
-
 
 	sphere1->SetScale(1.0f, 1.0f, 1.0f);
 	sphere1->SetPosition(2.0f, -2.0f, 2.0f);
@@ -151,17 +150,21 @@ void Game::CreateBasicGeometry()
 	sphere5->SetScale(1.0f, 1.0f, 1.0f);
 	sphere5->SetPosition(-2.0f, -2.0f, 2.0f);
 
-	plane1->SetScale(3.0f, 0.01f, 3.0f);
-	plane1->SetPosition(0.0f, -3.0f, 0.0f);
+	//Bottom
+	plane1->SetScale(5.0f, 0.01f, 5.5f);
+	plane1->SetPosition(0.0f, -3.5f, 0.0f);
 
-	plane2->SetScale(0.01f, 3.0f, 3.0f);
-	plane2->SetPosition(3.0f, -2.0f, 0.0f);
+	//Right
+	plane2->SetScale(0.01f, 3.5f, 5.5f);
+	plane2->SetPosition(2.5f, -2.0f, 0.5f);
 
-	plane3->SetScale(0.01f, 3.0f, 3.0f);
-	plane3->SetPosition(-3.0f, -2.0f, 0.0f);
+	//Left
+	plane3->SetScale(0.01f, 3.5f, 5.5f);
+	plane3->SetPosition(-2.5f, -2.0f, 0.5f);
 
-	plane4->SetScale(5.0f, 3.0f, 0.01f);
-	plane4->SetPosition(0.0f, -2.0f, 2.5f);
+	//Back
+	plane4->SetScale(5.0f, 3.5f, 0.01f);
+	plane4->SetPosition(0.0f, -2.0f, 3.0f);
 
 
 	currentEntity = 0;
@@ -173,8 +176,8 @@ void Game::CreateMaterials()
 	CreateWICTextureFromFile(device,context, L"Debug/Textures/rock.jpg", 0, &sphereTextureSRV);
 	CreateWICTextureFromFile(device,context, L"Debug/Textures/rockNormals.jpg",0, &sphereNormalMapSRV);
 
-	CreateWICTextureFromFile(device, context, L"Debug/Textures/rusty.jpg", 0, &planeTextureSRV);
-	CreateWICTextureFromFile(device, context, L"Debug/Textures/rustySpec.png", 0, &planeNormalMapSRV);
+	CreateWICTextureFromFile(device, context, L"Debug/Textures/plane.tiff", 0, &planeTextureSRV);
+	CreateWICTextureFromFile(device, context, L"Debug/Textures/planeNormals.tiff", 0, &planeNormalMapSRV);
 
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
