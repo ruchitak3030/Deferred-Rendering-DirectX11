@@ -12,12 +12,19 @@ Renderer::~Renderer()
 {
 }
 
+void Renderer::SetLights()
+{
+	pointLight1.SetpointLightValues(XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0), XMFLOAT3(-3, 0, 0));
+	pointLight2.SetpointLightValues(XMFLOAT4(0.3f, 0.3f, 1.0f, 1.0f), XMFLOAT3(3, 0, 0));
+}
+
 void Renderer::SetRenderer(GameEntity* &gameEntity, Camera* &camera, ID3D11Buffer* vb, ID3D11Buffer* ib, SimpleVertexShader* &vertexShader, SimplePixelShader* &pixelShader, ID3D11DeviceContext* context)
 {
+	SetLights();
 	pixelShader->SetFloat3("DirLightDirection", XMFLOAT3(1, 0, 0));
-	pixelShader->SetFloat4("DirLightColor", XMFLOAT4(0.8f, 0.8f, 0.8f, 1));
-	pixelShader->SetFloat3("PointLightPosition", XMFLOAT3(3, 0, 0));
-	pixelShader->SetFloat4("PointLightColor", XMFLOAT4(1, 0.3f, 0.3f, 1));
+	pixelShader->SetFloat4("DirLightColor", XMFLOAT4(0.3f, 0.3f, 0.3f, 1));
+	pixelShader->SetData("pointLight1", &pointLight1, sizeof(PointLight));
+	pixelShader->SetData("pointLight2", &pointLight2, sizeof(PointLight));
 	pixelShader->SetFloat3("CameraPosition", camera->GetPosition());
 
 	pixelShader->SetSamplerState("Sampler", gameEntity->GetMaterial()->GetSamplerState());

@@ -1,11 +1,17 @@
+struct PointLight
+{
+	float4 Color;
+	float3 Position;
+	
+};
 
 cbuffer lightData : register(b0)
 {
 	float4 DirLightColor;
 	float3 DirLightDirection;
 	
-	float4 PointLightColor;
-	float3 PointLightPosition;
+	PointLight pointLight1;
+	PointLight pointLight2;
 
 	float3 CameraPosition;
 };
@@ -49,20 +55,30 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float dirLightAmount = saturate(dot(input.normal, -normalize(DirLightDirection)));
 
 	// Point light calculation ---------------------
-	
-	float3 dirToPointLight = normalize(PointLightPosition - input.worldPos);
-	float pointLightAmount = saturate(dot(input.normal, dirToPointLight));
+	//float attenuation = 1.0f;
+
+	float3 dirToPointLight1 = normalize(pointLight1.Position - input.worldPos);
+	float pointLightAmount1 = saturate(dot(input.normal, dirToPointLight1));
+
+	float3 dirToPointLight2 = normalize(pointLight2.Position - input.worldPos);
+	float pointLightAmount2 = saturate(dot(input.normal, dirToPointLight2));
+
+	/*float dist = length(dirToPintLight1);
+
+	attenuation = max(0, 1.0f - (dist / LightRange.x));
+
+	dirToPointLight / = dist;*/
 
 	// Specular (for point light) ------------------
 
 	float3 toCamera = normalize(CameraPosition - input.worldPos);
-	float3 refl = reflect(-dirToPointLight, input.normal);
+	float3 refl = reflect(-dirToPointLight1, input.normal);
 	float spec = pow(max(dot(refl, toCamera), 0), 32);
 
 	// Sample the texture
 	float4 textureColor = Texture.Sample(Sampler, input.uv);
 
 	return (DirLightColor * dirLightAmount * textureColor) +	// Directional light
-		(PointLightColor * pointLightAmount * textureColor) + 	// Point light
+		(pointLight1.Color * pointLightAmount1 * textureColor) + (pointLight2.Color * pointLightAmount2 * textureColor) +	// Point light
 		spec;													// Specular
 }

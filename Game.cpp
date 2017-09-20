@@ -35,8 +35,14 @@ Game::~Game()
 	if (vertexBuffer) { vertexBuffer->Release(); }
 	if (indexBuffer) { indexBuffer->Release(); }
 	sampler->Release();
+	
 	sphereTextureSRV->Release();
 	sphereNormalMapSRV->Release();
+	planeTextureSRV->Release();
+	planeNormalMapSRV->Release();
+
+	delete sphereMaterial;
+	delete planeMaterial;
 
 	
 	delete vertexShader;
