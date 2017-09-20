@@ -25,5 +25,7 @@ private:
 
 	PointLight pointLight1;
 	PointLight pointLight2;
+
+	SpotLight spotLight1;
 };
 

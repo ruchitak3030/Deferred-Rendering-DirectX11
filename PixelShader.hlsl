@@ -5,6 +5,15 @@ struct PointLight
 	
 };
 
+struct SpotLight
+{
+	float4 Color;
+	float3 Position;
+	float3 Direction;
+	float2 SpotLightAngles;
+	float4 Range;
+};
+
 cbuffer lightData : register(b0)
 {
 	float4 DirLightColor;
@@ -12,6 +21,9 @@ cbuffer lightData : register(b0)
 	
 	PointLight pointLight1;
 	PointLight pointLight2;
+
+	SpotLight spotLight1;
+	
 
 	float3 CameraPosition;
 };
@@ -69,6 +81,19 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	dirToPointLight / = dist;*/
 
+	//SpotLight calculation------------------------
+	float attenuation = 1.0f;
+
+	float3 dirToSpotLight1 = spotLight1.Position - input.worldPos;
+	float dist = length(dirToSpotLight1);
+
+	attenuation = max(0, 1.0f - (dist / spotLight1.Range.x));
+
+	dirToSpotLight1 /= dist;
+
+	float rho = dot(-dirToSpotLight1, spotLight1.Direction);
+	attenuation *= saturate((rho - spotLight1.SpotLightAngles.y) / (spotLight1.SpotLightAngles.x - spotLight1.SpotLightAngles.y));
+
 	// Specular (for point light) ------------------
 
 	float3 toCamera = normalize(CameraPosition - input.worldPos);
@@ -78,7 +103,8 @@ float4 main(VertexToPixel input) : SV_TARGET
 	// Sample the texture
 	float4 textureColor = Texture.Sample(Sampler, input.uv);
 
-	return (DirLightColor * dirLightAmount * textureColor) +	// Directional light
-		(pointLight1.Color * pointLightAmount1 * textureColor) + (pointLight2.Color * pointLightAmount2 * textureColor) +	// Point light
-		spec;													// Specular
+	//return (DirLightColor * dirLightAmount * textureColor) +	// Directional light
+	//	(pointLight1.Color * pointLightAmount1 * textureColor) + (pointLight2.Color * pointLightAmount2 * textureColor) +	// Point light
+	//	spec*/ attenuation;													// Specular
+	return attenuation;
 }
