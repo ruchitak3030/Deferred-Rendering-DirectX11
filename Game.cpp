@@ -47,6 +47,43 @@ Game::~Game()
 	
 	delete vertexShader;
 	delete pixelShader;
+	delete deferredVertexShader;
+	delete deferredPixelShader;
+
+	//Clean up render target stuff
+	int i;
+	if (depthStencilView)
+	{
+		depthStencilView->Release();
+		depthStencilView = 0;
+	}
+
+	if (depthStencilBuffer)
+	{
+		depthStencilBuffer->Release();
+		depthStencilBuffer = 0;
+	}
+
+	for (i = 0; i < BUFFER_COUNT; i++)
+	{
+		if (shaderResourceViewArray[i])
+		{
+			shaderResourceViewArray[i]->Release();
+			shaderResourceViewArray[i] = 0;
+		}
+
+		if (renderTargetViewArray[i])
+		{
+			renderTargetViewArray[i]->Release();
+			renderTargetViewArray[i] = 0;
+		}
+
+		if (renderTargetTextureArray[i])
+		{
+			renderTargetTextureArray[i]->Release();
+			renderTargetTextureArray[i] = 0;
+		}
+	}
 
 	// Clean up resources
 	for(auto& e : entities) delete e;
@@ -60,6 +97,7 @@ void Game::Init()
 {
 	
 	LoadShaders();
+	SetDefferedSetup(width,height);
 	CreateMaterials();
 	CreateMatrices();
 	CreateBasicGeometry();
@@ -77,9 +115,93 @@ void Game::LoadShaders()
 	pixelShader = new SimplePixelShader(device, context);
 	if(!pixelShader->LoadShaderFile(L"Debug/PixelShader.cso"))	
 		pixelShader->LoadShaderFile(L"PixelShader.cso");
+
+	deferredVertexShader = new SimpleVertexShader(device, context);
+	if (!deferredVertexShader->LoadShaderFile(L"Debug/DeferredVertexShader.cso"))
+		deferredVertexShader->LoadShaderFile(L"DeferredVertexShader.cso");
+
+	deferredPixelShader = new SimplePixelShader(device, context);
+	if (!deferredPixelShader->LoadShaderFile(L"Debug/DeferredPixelShader.cso"))
+		deferredPixelShader->LoadShaderFile(L"DeferredPixelShader.cso");
 	
 }
 
+void Game::SetDefferedSetup(int textureWidth, int textureHeight)
+{
+	D3D11_TEXTURE2D_DESC textureDesc;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	int i;
+
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+	textureDesc.Width = textureWidth;
+	textureDesc.Height = textureHeight;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+	textureDesc.SampleDesc.Quality = 0;
+
+	for ( i = 0; i < BUFFER_COUNT; i++)
+	{
+		device->CreateTexture2D(&textureDesc, NULL, &renderTargetTextureArray[i]);
+
+	}
+
+
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	//Create Render target view
+	for (i = 0; i < BUFFER_COUNT; i++)
+	{
+		device->CreateRenderTargetView(renderTargetTextureArray[i], &renderTargetViewDesc, &renderTargetViewArray[i]);
+	}
+
+
+	//Shader Resource View Description
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	for (i = 0; i < BUFFER_COUNT; i++)
+	{
+		device->CreateShaderResourceView(renderTargetTextureArray[i], &shaderResourceViewDesc, &shaderResourceViewArray[i]);
+	}
+
+	//Depth Buffer Description
+	depthBufferDesc.Width = textureWidth;
+	depthBufferDesc.Height = textureHeight;
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.SampleDesc.Quality = 0;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.MiscFlags = 0;
+
+	device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
+
+	//Depth Stencil Description
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	device->CreateDepthStencilView(depthStencilBuffer, 0, &depthStencilView);
+
+
+}
 
 
 void Game::CreateMatrices()
@@ -232,26 +354,67 @@ void Game::Update(float deltaTime, float totalTime)
 void Game::Draw(float deltaTime, float totalTime)
 {
 	const float color[4] = {0,0,0,0};
-
+	int i;
 	
-	context->ClearRenderTargetView(backBufferRTV, color);
+	/*context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(
 		depthStencilView, 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
-		0);
+		0);*/
 
-	vertexShader->SetShader();
-	vertexShader->SetMatrix4x4("view", camera->GetView());
-	vertexShader->SetMatrix4x4("projection", camera->GetProjection());
+
+	//Bind render target view array and depth stencil buffer to output render pipeline
+	context->OMSetRenderTargets(BUFFER_COUNT, renderTargetViewArray, depthStencilView);
+
+	//Clear the render target buffers
+	for (i = 0; i < BUFFER_COUNT; i++)
+	{
+		context->ClearRenderTargetView(renderTargetViewArray[i], color);
+	}
+
+	//Clear the depth buffer
+	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
 
 	
-
 	for (int i = 0; i < entities.size(); i++)
 	{
-		renderer.SetRenderer(entities[i], camera, vertexBuffer, indexBuffer, vertexShader, pixelShader, context);
+		deferredPixelShader->SetSamplerState("AnisoSampler", entities[i]->GetMaterial()->GetSamplerState());
+		deferredPixelShader->SetShaderResourceView("DiffuseMap", entities[i]->GetMaterial()->GetTextureSRV());
+		deferredPixelShader->SetShaderResourceView("NormalMap", entities[i]->GetMaterial()->GetNormalMapSRV());
+
+		deferredPixelShader->CopyAllBufferData();
+		deferredPixelShader->SetShader();
+
+		deferredVertexShader->SetShader();
+		deferredVertexShader->SetMatrix4x4("world", entities[i]->GetWorldMatrix());
+		deferredVertexShader->SetMatrix4x4("view", camera->GetView());
+		deferredVertexShader->SetMatrix4x4("projection", camera->GetProjection());
+
+		deferredVertexShader->CopyAllBufferData();
+		deferredVertexShader->SetShader();
+
+		vertexBuffer = entities[i]->GetMesh()->GetVertexBuffer();
+		indexBuffer = entities[i]->GetMesh()->GetIndexBuffer();
+
+		context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+		context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+		context->DrawIndexed(entities[i]->GetMesh()->GetIndexCount(), 0, 0);
 	}
+
 	
+
+	/*for (int i = 0; i < entities.size(); i++)
+	{
+		renderer.SetRenderer(entities[i], camera, vertexBuffer, indexBuffer, deferredVertexShader, deferredPixelShader, context);
+	}*/
+	
+	
+
 	swapChain->Present(0, 0);
 }
 

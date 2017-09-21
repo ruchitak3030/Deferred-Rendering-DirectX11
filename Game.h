@@ -1,5 +1,7 @@
 #pragma once
 
+const int BUFFER_COUNT = 2;
+
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include <DirectXMath.h>
@@ -63,6 +65,7 @@ private:
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadShaders(); 
+	void SetDefferedSetup(int textureWidth, int textureHeight);
 	void CreateMatrices();
 	void CreateBasicGeometry();
 	void CreateMaterials();
@@ -74,6 +77,12 @@ private:
 	ID3D11ShaderResourceView* planeNormalMapSRV;
 	ID3D11SamplerState* sampler;
 
+	//RenderTargets for Deferred rendering
+	ID3D11Texture2D* renderTargetTextureArray[BUFFER_COUNT];
+	ID3D11RenderTargetView* renderTargetViewArray[BUFFER_COUNT];
+	ID3D11ShaderResourceView* shaderResourceViewArray[BUFFER_COUNT];
+	ID3D11Texture2D* depthStencilBuffer;
+
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
@@ -81,6 +90,8 @@ private:
 	// Wrappers for DirectX shaders to provide simplified functionality
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
+	SimpleVertexShader* deferredVertexShader;
+	SimplePixelShader* deferredPixelShader;
 
 	// The matrices to go from model space to screen space
 	DirectX::XMFLOAT4X4 worldMatrix;

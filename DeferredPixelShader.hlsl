@@ -1,4 +1,5 @@
 Texture2D DiffuseMap			: register(t0);
+Texture2D NormalMap				: register(t1);
 SamplerState AnisoSampler		: register(s0);
 
 cbuffer MatProperties
@@ -13,6 +14,8 @@ struct VertexToPixel
 	float2 uv					: TEXCOORD;
 	float3 normalWS				: NORMALWS;
 	float3 positionWS			: POSITIONWS;
+	float3 TangentWS			: TANGENTWS;
+	float3 BitangentWS			: BITANGENTWS;
 };
 
 struct PixelShaderOutput
@@ -30,8 +33,15 @@ PixelShaderOutput main(VertexToPixel input)
 	//Sample the diffuse map
 	float3 diffuseAlbedo = DiffuseMap.Sample(AnisoSampler, input.uv).rgb;
 
-	//Normalize the normal after interpolation
-	float3 normalWS = normalize(input.normalWS);
+	//Normalize the tangent frame after interpolation
+	float3x3 tangentFrameWS = float3x3(normalize(input.TangentWS), normalize(input.BitangentWS), normalize(input.normalWS));
+
+	//Sample the tangent-space normal map and decompress
+	float3 normalTS = NormalMap.Sample(AnisoSampler, input.uv).rgb;
+	normalTS = normalize(normalTS*2.0f - 1.0f);
+
+	//Convert to world space
+	float3 normalWS = mul(normalTS, tangentFrameWS);
 
 	//Output G-Buffer values
 	output.Normal = float4(normalWS, 1.0f);
