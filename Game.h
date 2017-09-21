@@ -82,6 +82,8 @@ private:
 	ID3D11RenderTargetView* renderTargetViewArray[BUFFER_COUNT];
 	ID3D11ShaderResourceView* shaderResourceViewArray[BUFFER_COUNT];
 	ID3D11Texture2D* depthStencilBuffer;
+	ID3D11RenderTargetView* bbRTV;
+	ID3D11ShaderResourceView* bbSRV;
 
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
@@ -92,6 +94,8 @@ private:
 	SimplePixelShader* pixelShader;
 	SimpleVertexShader* deferredVertexShader;
 	SimplePixelShader* deferredPixelShader;
+	SimpleVertexShader* backBufferVertexShader;
+	SimplePixelShader* backBufferPixelShader;
 
 	// The matrices to go from model space to screen space
 	DirectX::XMFLOAT4X4 worldMatrix;

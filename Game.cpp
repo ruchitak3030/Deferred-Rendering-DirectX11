@@ -49,6 +49,8 @@ Game::~Game()
 	delete pixelShader;
 	delete deferredVertexShader;
 	delete deferredPixelShader;
+	delete backBufferVertexShader;
+	delete backBufferPixelShader;
 
 	//Clean up render target stuff
 	int i;
@@ -123,6 +125,14 @@ void Game::LoadShaders()
 	deferredPixelShader = new SimplePixelShader(device, context);
 	if (!deferredPixelShader->LoadShaderFile(L"Debug/DeferredPixelShader.cso"))
 		deferredPixelShader->LoadShaderFile(L"DeferredPixelShader.cso");
+
+	backBufferVertexShader = new SimpleVertexShader(device, context);
+	if (!backBufferVertexShader->LoadShaderFile(L"Debug/BackBufferVertexShader.cso"))
+		backBufferVertexShader->LoadShaderFile(L"BackBufferVertexShader.cso");
+
+	backBufferPixelShader = new SimplePixelShader(device, context);
+	if (!backBufferPixelShader->LoadShaderFile(L"Debug/BackBufferPixelShader.cso"))
+		backBufferPixelShader->LoadShaderFile(L"BackBufferPixelShader.cso");
 	
 }
 
@@ -132,7 +142,7 @@ void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	int i;
 
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
@@ -198,7 +208,7 @@ void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-	device->CreateDepthStencilView(depthStencilBuffer, 0, &depthStencilView);
+	device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &depthStencilView);
 
 
 }
@@ -376,6 +386,8 @@ void Game::Draw(float deltaTime, float totalTime)
 	//Clear the depth buffer
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+
+
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
@@ -406,7 +418,25 @@ void Game::Draw(float deltaTime, float totalTime)
 		context->DrawIndexed(entities[i]->GetMesh()->GetIndexCount(), 0, 0);
 	}
 
-	
+	context->ClearRenderTargetView(backBufferRTV, color);
+	context->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
+	//context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f,0);
+
+	backBufferVertexShader->SetShader();
+	backBufferPixelShader->SetShaderResourceView("Texture", bbSRV);
+	backBufferPixelShader->SetSamplerState("Sampler", sampler);
+	backBufferPixelShader->CopyAllBufferData();
+	backBufferPixelShader->SetShader();
+
+	ID3D11Buffer* nothing = 0;
+	context->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+	context->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
+
+	// Actually draw exactly 3 vertices
+	context->Draw(3, 0);
+
+	// Unbind the post process texture from input
+	backBufferPixelShader->SetShaderResourceView("Texture", 0);
 
 	/*for (int i = 0; i < entities.size(); i++)
 	{
