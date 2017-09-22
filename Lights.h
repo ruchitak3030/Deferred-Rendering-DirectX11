@@ -19,16 +19,14 @@ struct PointLight
 
 struct SpotLight
 {
-	XMFLOAT4 Color;
-	XMFLOAT3 Position;
 	XMFLOAT3 Direction;
+	float SpotPower;
 	
 
-	void SetSpotLightValues(XMFLOAT4 _color, XMFLOAT3 _position, XMFLOAT3 _direction)
+	void SetSpotLightValues(XMFLOAT3 _direction, float _power)
 	{
-		Color = _color;
-		Position = _position;
 		Direction = _direction;
+		SpotPower = _power;
 		
 	}
 };

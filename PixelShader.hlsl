@@ -4,25 +4,28 @@ struct PointLight
 	float3 Position;
 	
 };
-
 struct SpotLight
 {
-	float4 Color;
-	float3 Position;
 	float3 Direction;
-	
+	float SpotPower;
 };
+
 
 cbuffer lightData : register(b0)
 {
 	float4 DirLightColor;
 	float3 DirLightDirection;
 	
+	//point Light sources for spotlight
 	PointLight pointLight1;
 	PointLight pointLight2;
 
+	PointLight pointLight3;
+	PointLight pointLight4;
+
 	SpotLight spotLight1;
-	
+	SpotLight spotLight2;	
+
 
 	float3 CameraPosition;
 };
@@ -74,35 +77,45 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 dirToPointLight2 = normalize(pointLight2.Position - input.worldPos);
 	float pointLightAmount2 = saturate(dot(input.normal, dirToPointLight2));
 
-	
+	float3 dirToPointLight3 = normalize(pointLight3.Position - input.worldPos);
+	float pointLightAmount3 = saturate(dot(input.normal, dirToPointLight3));
+
+	float3 dirToPointLight4 = normalize(pointLight4.Position - input.worldPos);
+	float pointLightAmount4 = saturate(dot(input.normal, dirToPointLight4));
+
 
 	//SpotLight calculation------------------------
-	float3 dirToSpotLight1 = normalize(spotLight1.Position - input.worldPos);
-	float spotLightAmount1 = saturate(dot(input.normal, dirToSpotLight1));
+	float angleFromCenter1 = max(dot(dirToPointLight1, spotLight1.Direction), 0.0f);
+	float spotAmount1 = pow(angleFromCenter1, spotLight1.SpotPower);
 
-	float minCos = cos(5.0);
-	float maxCos = (minCos + 1.0f) / 2.0f;
-	float cosAngle = dot(spotLight1.Direction.xyz, -dirToSpotLight1);
-	float spot = smoothstep(minCos, maxCos, cosAngle);
+	float angleFromCenter2 = max(dot(dirToPointLight2, spotLight2.Direction), 0.0f);
+	float spotAmount2 = pow(angleFromCenter2, spotLight2.SpotPower);
 
-	/*float3 refl1 = reflect(-dirToSpotLight1, input.normal);
-	float spotSpecular = pow(max(dot(refl1, normalize(CameraPosition - input.worldPos)), 0), 32);
-
-	float spot = pow(max(dot(-dirToSpotLight1, spotLight1.Direction), 0.0f), 20);*/
-
-	float4 finalLitColor = spotLight1.Color * spotLightAmount1 * textureColor * spot;
+	
 
 	// Specular (for point light) ------------------
-
 	float3 toCamera = normalize(CameraPosition - input.worldPos);
-	float3 refl = reflect(-dirToPointLight1, input.normal);
+	float3 refl = reflect(-dirToPointLight3, input.normal);
 	float spec = pow(max(dot(refl, toCamera), 0), 32);
 
+	float3 toCamera1 = normalize(CameraPosition - input.worldPos);
+	float3 refl1 = reflect(-dirToPointLight4, input.normal);
+	float spec1 = pow(max(dot(refl1, toCamera1), 0), 32);
+
+
+	//Total Directional Light
+	float3 totalDirLight = DirLightColor * dirLightAmount * textureColor;
+
+	//Total point Light
+	float3 totalPointLight = (pointLight3.Color*pointLightAmount3*textureColor) + (pointLight4.Color*pointLightAmount4*textureColor);
+
+	//Total Spotlight
+	float3 totalSpotLight = (spotAmount1 * pointLight1.Color * textureColor) + (spotAmount2 * pointLight2.Color * textureColor);
+
 	
 
-	//return (DirLightColor * dirLightAmount * textureColor) +	// Directional light
-	//	(pointLight1.Color * pointLightAmount1 * textureColor) + (pointLight2.Color * pointLightAmount2 * textureColor) + spec+	// Point light
-	//	finalLitColor;													// Specular
+	float3 totalLight = totalPointLight + totalSpotLight + spec + spec1;
+
 	
-	return finalLitColor;
+	return float4(totalLight,1.0f);
 }

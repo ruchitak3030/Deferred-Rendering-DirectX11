@@ -1,4 +1,4 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (DX11Starter.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-Z:\IGMProfile\Desktop\Deferred-Rendering-DirectX11\BackBufferVertexShader.hlsl(8,28-40): error X4555: invalid type used for 'SV_VertexID' input semantics, must be integral
-  
-  compilation failed; no code produced
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (DX11Starter.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Renderer.cpp
+  DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\Debug\Deferred Rendering.exe
+  DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\Debug\Deferred Rendering.pdb (Partial PDB)
