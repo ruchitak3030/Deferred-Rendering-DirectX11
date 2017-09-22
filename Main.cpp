@@ -3,6 +3,8 @@
 #include "Game.h"
 
 
+
+
 int WINAPI WinMain(
 	HINSTANCE hInstance,		// The handle to this app's instance
 	HINSTANCE hPrevInstance,	// A handle to the previous instance of the app (always NULL)
@@ -10,6 +12,7 @@ int WINAPI WinMain(
 	int nCmdShow)				// How the window should be shown (we ignore this)
 {
 #if defined(DEBUG) | defined(_DEBUG)
+
 	
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif

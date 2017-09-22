@@ -5,7 +5,7 @@ struct VertexToPixel
 };
 
 Texture2D Texture		: register(t0);
-SmaplerState Sampler : register(s0);
+SamplerState Sampler : register(s0);
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
