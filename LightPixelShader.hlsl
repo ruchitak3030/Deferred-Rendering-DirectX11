@@ -6,8 +6,8 @@ SamplerState Sampler						: register(s0);
 cbuffer LightData		: register(b0)
 {
 	
-	float4 pointLightPosition;
-	float3 pointLightColor;
+	float3 pointLightPosition;
+	float4 pointLightColor;
 	
 }
 

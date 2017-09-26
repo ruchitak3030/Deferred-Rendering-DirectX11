@@ -72,6 +72,9 @@ Game::~Game()
 		}
 	}
 
+	rasterizer->Release();
+	blendState->Release();
+
 	delete sphereMaterial;
 	delete planeMaterial;
 
@@ -91,7 +94,7 @@ Game::~Game()
 
 	// Clean up resources
 	delete lightEntity;
-
+	
 	for(auto& e : entities) delete e;
 	for(auto& m : meshes) delete m;
 	delete camera;
@@ -471,10 +474,11 @@ void Game::Draw(float deltaTime, float totalTime)
 
 		context->DrawIndexed(entities[i]->GetMesh()->GetIndexCount(), 0, 0);
 	}
-
+	//ID3D11RenderTargetView* targets[8] = {};
+	//targets[0] = backBufferRTV;
 	
 
-	context->OMSetRenderTargets(1, &backBufferRTV, depthStencilView);
+	context->OMSetRenderTargets(1,&backBufferRTV, depthStencilView);
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f,0);
 
@@ -484,9 +488,6 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	ID3D11Buffer* vb1 = lightEntity->GetMesh()->GetVertexBuffer();
 	ID3D11Buffer* ib1 = lightEntity->GetMesh()->GetIndexBuffer();
-
-	/*UINT stride = sizeof(Vertex);
-	UINT offset = 0;*/
 
 	context->IASetVertexBuffers(0, 1, &vb1, &stride, &offset);
 	context->IASetIndexBuffer(ib1, DXGI_FORMAT_R32_UINT, 0);

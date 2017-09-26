@@ -462,6 +462,10 @@ LRESULT DXCore::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	// Sent when the window size changes
 	case WM_SIZE:
+
+		if (wParam == SIZE_MINIMIZED)
+			return 0;
+
 		// Save the new client area dimensions.
 		width = LOWORD(lParam);
 		height = HIWORD(lParam);
