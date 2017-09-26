@@ -52,6 +52,8 @@ private:
 	GameEntity* plane3;
 	GameEntity* plane4;
 
+	GameEntity* lightEntity;
+
 
 	Renderer renderer;
 
@@ -79,6 +81,9 @@ private:
 	ID3D11RenderTargetView* renderTargetViewArray[BUFFER_COUNT];
 	ID3D11ShaderResourceView* shaderResourceViewArray[BUFFER_COUNT];
 	ID3D11Texture2D* depthStencilBuffer;
+
+	ID3D11RasterizerState* rasterizer;
+	ID3D11BlendState* blendState;
 	
 
 	// Buffers to hold actual geometry data
@@ -92,6 +97,8 @@ private:
 	SimplePixelShader* deferredPixelShader;
 	SimpleVertexShader* backBufferVertexShader;
 	SimplePixelShader* backBufferPixelShader;
+	SimpleVertexShader* lightVertexShader;
+	SimplePixelShader* lightPixelShader;
 
 	// The matrices to go from model space to screen space
 	DirectX::XMFLOAT4X4 worldMatrix;
