@@ -16,8 +16,8 @@ struct VertexToPixel
 
 struct PixelShaderOutput
 {
-	float4 Normal				: SV_Target0;
-	float4 DiffuseAlbedo		: SV_Target1;
+	float4 Normal				: SV_Target0;			//Normal map
+	float4 Diffuse				: SV_Target1;			//Color
 	float4 Position				: SV_Target2;
 };
 
@@ -43,27 +43,9 @@ PixelShaderOutput main(VertexToPixel input)
 	float4 textureColor = Texture.Sample(Sampler, input.uv);
 
 	output.Normal = float4(input.normal, 1.0f);
-	output.DiffuseAlbedo = textureColor;
+	output.Diffuse = textureColor;
 	output.Position = float4( input.worldPos, 1.0f);
 
-	////Sample the diffuse map
-	//float3 diffuseAlbedo = DiffuseMap.Sample(AnisoSampler, input.uv).rgb;
-
-	////Normalize the tangent frame after interpolation
-	//float3x3 tangentFrameWS = float3x3(normalize(input.TangentWS), normalize(input.BitangentWS), normalize(input.normalWS));
-
-	////Sample the tangent-space normal map and decompress
-	//float3 normalTS = NormalMap.Sample(AnisoSampler, input.uv).rgb;
-	//normalTS = normalize(normalTS*2.0f - 1.0f);
-
-	////Convert to world space
-	//float3 normalWS = mul(normalTS, tangentFrameWS);
-
-	////Output G-Buffer values
-	//output.Normal = float4(normalWS, 1.0f);
-	//output.DiffuseAlbedo = float4(diffuseAlbedo, 1.0f);
-	//output.SpecularAlbedo = float4(SpecularAlbedo, SpecularPower);
-	//output.Position = float4(input.positionWS, 1.0f);
 
 	return output;
 }

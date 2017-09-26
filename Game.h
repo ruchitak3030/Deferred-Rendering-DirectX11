@@ -1,11 +1,8 @@
 #pragma once
-
 const int BUFFER_COUNT = 3;
-
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include <DirectXMath.h>
-
 #include "Camera.h"
 #include "Mesh.h"
 #include "GameEntity.h"

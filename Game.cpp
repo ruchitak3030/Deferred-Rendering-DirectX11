@@ -1,6 +1,3 @@
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
 #include "Game.h"
 #include "Vertex.h"
 #include "WICTextureLoader.h" // From DirectX Tool Kit
@@ -44,21 +41,8 @@ Game::~Game()
 	planeTextureSRV->Release();
 	planeNormalMapSRV->Release();
 
-	delete sphereMaterial;
-	delete planeMaterial;
-
-	
-	delete vertexShader;
-	delete pixelShader;
-	delete deferredVertexShader;
-	delete deferredPixelShader;
-	delete backBufferVertexShader;
-	delete backBufferPixelShader;
-
 	//Clean up render target stuff
 	int i;
-
-	
 
 	if (depthStencilBuffer)
 	{
@@ -66,6 +50,7 @@ Game::~Game()
 		depthStencilBuffer = 0;
 	}
 
+	
 	for (i = 0; i < BUFFER_COUNT; i++)
 	{
 		if (shaderResourceViewArray[i])
@@ -87,6 +72,19 @@ Game::~Game()
 		}
 	}
 
+	delete sphereMaterial;
+	delete planeMaterial;
+
+	
+	delete vertexShader;
+	delete pixelShader;
+	
+	delete backBufferPixelShader;
+	delete backBufferVertexShader;
+
+	delete deferredPixelShader;
+	delete deferredVertexShader;
+	
 
 	// Clean up resources
 	for(auto& e : entities) delete e;
@@ -139,13 +137,9 @@ void Game::LoadShaders()
 
 void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 {
-	D3D11_TEXTURE2D_DESC textureDesc;
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	int i;
 
+	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
 
 	textureDesc.Width = textureWidth;
@@ -166,6 +160,7 @@ void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 
 	}
 
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	renderTargetViewDesc.Format = textureDesc.Format;
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
@@ -176,7 +171,7 @@ void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 		device->CreateRenderTargetView(renderTargetTextureArray[i], &renderTargetViewDesc, &renderTargetViewArray[i]);
 	}
 
-
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	//Shader Resource View Description
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -188,7 +183,9 @@ void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 		device->CreateShaderResourceView(renderTargetTextureArray[i], &shaderResourceViewDesc, &shaderResourceViewArray[i]);
 	}
 
+
 	//Depth Buffer Description
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
@@ -205,6 +202,7 @@ void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 	device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
 
 	//Depth Stencil Description
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -427,7 +425,7 @@ void Game::Draw(float deltaTime, float totalTime)
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f,0);
 
 	backBufferVertexShader->SetShader();
-	backBufferPixelShader->SetShaderResourceView("Texture", shaderResourceViewArray[1]);
+	backBufferPixelShader->SetShaderResourceView("Texture", shaderResourceViewArray[0]);
 	backBufferPixelShader->SetSamplerState("Sampler", sampler);
 	backBufferPixelShader->CopyAllBufferData();
 	backBufferPixelShader->SetShader();
@@ -447,7 +445,6 @@ void Game::Draw(float deltaTime, float totalTime)
 		renderer.SetRenderer(entities[i], camera, vertexBuffer, indexBuffer, vertexShader, pixelShader, context);
 	}
 	*/
-	
 
 	swapChain->Present(0, 0);
 }
