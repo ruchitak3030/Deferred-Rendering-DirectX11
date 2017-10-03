@@ -10,10 +10,11 @@ struct PointLight
 };
 cbuffer LightData		: register(b0)
 {
-	
-	PointLight pointLight1;
+	float4 Color;
+	float3 Position;
+	/*PointLight pointLight1;
 	PointLight pointLight2;
-	
+	*/
 }
 
 struct VertexToPixel
@@ -22,7 +23,7 @@ struct VertexToPixel
 
 };
 
-float4 main(VertexToPixel input) : SV_TARGET-
+float4 main(VertexToPixel input) : SV_TARGET0
 {
 	float3 normal;
     float3 position;
@@ -35,14 +36,14 @@ float4 main(VertexToPixel input) : SV_TARGET-
 	diffuse = Texture.Load(sampleIndices).xyz;
 
 	//Point Light calculation
-	float3 dirToPointLight = normalize(pointLight1.Position - position);
+	float3 dirToPointLight = normalize(Position - position);
 	float pointLightAmount = saturate(dot(normal, dirToPointLight));
 
-	float3 dirToPointLight1 = normalize(pointLight2.Position - position);
+	/*float3 dirToPointLight1 = normalize(pointLight2.Position - position);
 	float pointLightAmount1 = saturate(dot(normal, dirToPointLight1));
 
-	float3 pointLight = (pointLightAmount * pointLight1.Color * diffuse) + (pointLightAmount1 * pointLight2.Color * diffuse);
+	float3 pointLight = (pointLightAmount * pointLight1.Color * diffuse) + (pointLightAmount1 * pointLight2.Color * diffuse);*/
 	
 
-	return float4(pointLight, 1.0f);
+	return float4(pointLightAmount * Color * diffuse, 1.0f);
 }

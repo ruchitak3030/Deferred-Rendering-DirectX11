@@ -358,27 +358,26 @@ void Game::CreateBasicGeometry()
 	//spotlight 1
 	light[0].Color = XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0);
 	light[0].Position = XMFLOAT3(-3, 0, 0);
-	light[0].Direction = XMFLOAT3(2, 2, -2);
-	light[0].SpotPower = 0.5;
+	
 
 	//Spotlight 2
-	light[1].Direction = XMFLOAT3(-2, 2, -5);
+	
 	light[1].Position = XMFLOAT3(3, 0, 0);
 	light[1].Color = XMFLOAT4(0.5f, 1.0f, 0.5f, 1.0f);
-	light[1].SpotPower = 0.5;
+	
 
 
-	//pointlight1
-	light[2].Position = XMFLOAT3(-1, 1, 0);
-	light[2].Color = XMFLOAT4(0.3f, 0.0f, 1.0f, 1.0);
-	light[2].Direction = XMFLOAT3(0, 0, 0);
-	light[2].SpotPower = 0;
+	////pointlight1
+	//light[2].Position = XMFLOAT3(-1, 1, 0);
+	//light[2].Color = XMFLOAT4(0.3f, 0.0f, 1.0f, 1.0);
+	//light[2].Direction = XMFLOAT3(0, 0, 0);
+	//light[2].SpotPower = 0;
 
-	//pointlight2
-	light[3].Position = XMFLOAT3(1, 1, 0);
-	light[3].Color = XMFLOAT4(0.3f, 0.0f, 0.7f, 1.0f);
-	light[3].Direction = XMFLOAT3(0, 0, 0);
-	light[3].SpotPower = 0;
+	////pointlight2
+	//light[3].Position = XMFLOAT3(1, 1, 0);
+	//light[3].Color = XMFLOAT4(0.3f, 0.0f, 0.7f, 1.0f);
+	//light[3].Direction = XMFLOAT3(0, 0, 0);
+	//light[3].SpotPower = 0;
 
 
 		
@@ -534,10 +533,9 @@ void Game::Draw(float deltaTime, float totalTime)
 		lightPixelShader->SetShaderResourceView("PositionTexture", shaderResourceViewArray[2]);
 
 		lightPixelShader->SetFloat3("CameraPosition", camera->GetPosition());
-		pointLight1.SetpointLightValues(XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0), XMFLOAT3(-3, 0, 0));
-		pointLight2.SetpointLightValues(XMFLOAT4(0.5f, 1.0f, 0.5f, 1.0f), XMFLOAT3(3, 0, 0));
-		/*lightPixelShader->SetFloat3("pointLightPosition", XMFLOAT3(-3, 0, 0));
-		lightPixelShader->SetFloat4("pointLightColor", XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0));*/
+		
+		lightPixelShader->SetFloat3("Position", light[i].Position);
+		lightPixelShader->SetFloat4("Color", light[i].Color);
 		/*lightPixelShader->SetData("pointLight1", &pointLight1, sizeof(PointLight));
 		lightPixelShader->SetData("pointLight2", &pointLight2, sizeof(PointLight));*/
 

@@ -1,6 +1,11 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (DX11Starter.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (DX11Starter.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Renderer.cpp
+  Main.cpp
+  Generating Code...
+  Compiling...
   Game.cpp
-c:\users\ruchi\desktop\deferred-rendering-directx11\game.cpp(404): warning C4018: '<': signed/unsigned mismatch
-c:\users\ruchi\desktop\deferred-rendering-directx11\game.cpp(449): warning C4018: '<': signed/unsigned mismatch
-  DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\Debug\Deferred Rendering.exe
-  DX11Starter.vcxproj -> C:\Users\ruchi\Desktop\Deferred-Rendering-DirectX11\Debug\Deferred Rendering.pdb (Partial PDB)
+z:\igmprofile\desktop\deferred-rendering-directx11\game.cpp(432): warning C4018: '<': signed/unsigned mismatch
+z:\igmprofile\desktop\deferred-rendering-directx11\game.cpp(477): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\Deferred-Rendering-DirectX11\Debug\Deferred Rendering.exe
+  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\Deferred-Rendering-DirectX11\Debug\Deferred Rendering.pdb (Partial PDB)

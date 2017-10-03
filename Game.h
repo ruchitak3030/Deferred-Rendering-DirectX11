@@ -121,11 +121,7 @@ private:
 	struct Lights
 	{
 		XMFLOAT3 Position;
-		XMFLOAT3 Direction;
 		XMFLOAT4 Color;
-		float SpotPower;
-		UINT Type;
-
 	};
 
 	Lights light[MAX_LIGHTS];

@@ -22,7 +22,7 @@ struct LightResult
 Texture2D Texture			: register(t0);
 Texture2D NormalMap			: register(t1);
 Texture2D PositionTexture	: register(t2);
-StructuredBuffer<Light> lights	:	register(t3);
+StructuredBuffer<Light> lights	:	register(b0);
 
 struct VertexToPixel
 {
