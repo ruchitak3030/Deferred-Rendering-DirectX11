@@ -1,5 +1,6 @@
 #pragma once
 const int BUFFER_COUNT = 3;
+#define MAX_LIGHTS 5
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include <DirectXMath.h>
@@ -8,6 +9,7 @@ const int BUFFER_COUNT = 3;
 #include "GameEntity.h"
 #include "Renderer.h"
 #include "Material.h"
+#include "Lights.h"
 
 class Game 
 	: public DXCore
@@ -84,6 +86,7 @@ private:
 
 	ID3D11RasterizerState* rasterizer;
 	ID3D11BlendState* blendState;
+
 	
 
 	// Buffers to hold actual geometry data
@@ -105,8 +108,26 @@ private:
 	DirectX::XMFLOAT4X4 viewMatrix;
 	DirectX::XMFLOAT4X4 projectionMatrix;
 
+	//Lights
+	PointLight pointLight1;
+	PointLight pointLight2;
+	
+
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
+
+	//Lights
+	struct Lights
+	{
+		XMFLOAT3 Position;
+		XMFLOAT3 Direction;
+		XMFLOAT4 Color;
+		float SpotPower;
+		UINT Type;
+
+	};
+
+	Lights light[MAX_LIGHTS];
 };
 

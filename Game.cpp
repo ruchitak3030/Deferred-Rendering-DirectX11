@@ -106,7 +106,7 @@ void Game::Init()
 {
 	
 	LoadShaders();
-	SetDefferedSetup(width,height);
+	SetDefferedSetup(width, height);
 	CreateMaterials();
 	CreateMatrices();
 	CreateBasicGeometry();
@@ -251,10 +251,6 @@ void Game::SetDefferedSetup(int textureWidth, int textureHeight)
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	device->CreateBlendState(&blendDesc, &blendState);
-
-
-
-
 }
 
 
@@ -279,7 +275,7 @@ void Game::CreateBasicGeometry()
 	Mesh* planeMesh3 = new Mesh("Models/cube.obj", device);
 	Mesh* planeMesh4 = new Mesh("Models/cube.obj", device);
 
-	Mesh* lightMesh = new Mesh("Models/cube.obj", device);
+	Mesh* lightMesh = new Mesh("Models/sphere.obj", device);
 
 	meshes.push_back(sphereMesh);
 	meshes.push_back(sphereMesh1);
@@ -353,10 +349,39 @@ void Game::CreateBasicGeometry()
 	plane4->SetScale(5.0f, 3.5f, 0.01f);
 	plane4->SetPosition(0.0f, -2.0f, 3.0f);
 
-	lightEntity->SetPosition(-3, 0, 0);
+	lightEntity->SetPosition(0, 2, 0);
 	lightEntity->SetScale(1, 1, 1);
 
 	currentEntity = 0;
+
+	//Assign light values
+	//spotlight 1
+	light[0].Color = XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0);
+	light[0].Position = XMFLOAT3(-3, 0, 0);
+	light[0].Direction = XMFLOAT3(2, 2, -2);
+	light[0].SpotPower = 0.5;
+
+	//Spotlight 2
+	light[1].Direction = XMFLOAT3(-2, 2, -5);
+	light[1].Position = XMFLOAT3(3, 0, 0);
+	light[1].Color = XMFLOAT4(0.5f, 1.0f, 0.5f, 1.0f);
+	light[1].SpotPower = 0.5;
+
+
+	//pointlight1
+	light[2].Position = XMFLOAT3(-1, 1, 0);
+	light[2].Color = XMFLOAT4(0.3f, 0.0f, 1.0f, 1.0);
+	light[2].Direction = XMFLOAT3(0, 0, 0);
+	light[2].SpotPower = 0;
+
+	//pointlight2
+	light[3].Position = XMFLOAT3(1, 1, 0);
+	light[3].Color = XMFLOAT4(0.3f, 0.0f, 0.7f, 1.0f);
+	light[3].Direction = XMFLOAT3(0, 0, 0);
+	light[3].SpotPower = 0;
+
+
+		
 }
 
 void Game::CreateMaterials()
@@ -422,14 +447,14 @@ void Game::Draw(float deltaTime, float totalTime)
 		depthStencilView, 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
-		0);*/
+		0);
 
 	
 
 
 
 	
-	/*vertexShader->SetShader();
+	vertexShader->SetShader();
 	vertexShader->SetMatrix4x4("view", camera->GetView());
 	vertexShader->SetMatrix4x4("projection", camera->GetProjection());*/
 
@@ -486,63 +511,71 @@ void Game::Draw(float deltaTime, float totalTime)
 	float blend[4] = { 1,1,1, 1};
 	context->OMSetBlendState(blendState, blend, 0xFFFFFFFF);
 
-	ID3D11Buffer* vb1 = lightEntity->GetMesh()->GetVertexBuffer();
-	ID3D11Buffer* ib1 = lightEntity->GetMesh()->GetIndexBuffer();
+	for (int i = 0; i < MAX_LIGHTS; i++)
+	{
+		ID3D11Buffer* vb1 = lightEntity->GetMesh()->GetVertexBuffer();
+		ID3D11Buffer* ib1 = lightEntity->GetMesh()->GetIndexBuffer();
 
-	context->IASetVertexBuffers(0, 1, &vb1, &stride, &offset);
-	context->IASetIndexBuffer(ib1, DXGI_FORMAT_R32_UINT, 0);
+		context->IASetVertexBuffers(0, 1, &vb1, &stride, &offset);
+		context->IASetIndexBuffer(ib1, DXGI_FORMAT_R32_UINT, 0);
 
-	lightVertexShader->SetMatrix4x4("world", lightEntity->GetWorldMatrix());
-	lightVertexShader->SetMatrix4x4("view", camera->GetView());
-	lightVertexShader->SetMatrix4x4("projection", camera->GetProjection());
+		lightVertexShader->SetMatrix4x4("world", lightEntity->GetWorldMatrix());
+		lightVertexShader->SetMatrix4x4("view", camera->GetView());
+		lightVertexShader->SetMatrix4x4("projection", camera->GetProjection());
 
-	lightVertexShader->CopyAllBufferData();
-	lightVertexShader->SetShader();
+		lightVertexShader->CopyAllBufferData();
+		lightVertexShader->SetShader();
 
+
+
+		lightPixelShader->SetSamplerState("Sampler", sampler);
+		lightPixelShader->SetShaderResourceView("NormalMap", shaderResourceViewArray[0]);
+		lightPixelShader->SetShaderResourceView("Texture", shaderResourceViewArray[1]);
+		lightPixelShader->SetShaderResourceView("PositionTexture", shaderResourceViewArray[2]);
+
+		lightPixelShader->SetFloat3("CameraPosition", camera->GetPosition());
+		pointLight1.SetpointLightValues(XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0), XMFLOAT3(-3, 0, 0));
+		pointLight2.SetpointLightValues(XMFLOAT4(0.5f, 1.0f, 0.5f, 1.0f), XMFLOAT3(3, 0, 0));
+		/*lightPixelShader->SetFloat3("pointLightPosition", XMFLOAT3(-3, 0, 0));
+		lightPixelShader->SetFloat4("pointLightColor", XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0));*/
+		/*lightPixelShader->SetData("pointLight1", &pointLight1, sizeof(PointLight));
+		lightPixelShader->SetData("pointLight2", &pointLight2, sizeof(PointLight));*/
+
+		lightPixelShader->CopyAllBufferData();
+		lightPixelShader->SetShader();
+
+		context->DrawIndexed(lightEntity->GetMesh()->GetIndexCount(), 0, 0);
+
+		context->OMSetBlendState(NULL, blend, 0xFFFFFFFF);
+	}
 	
 
-	lightPixelShader->SetSamplerState("Sampler", sampler);
-	lightPixelShader->SetShaderResourceView("NormalMap", shaderResourceViewArray[0]);
-	lightPixelShader->SetShaderResourceView("Texture", shaderResourceViewArray[1]);	
-	lightPixelShader->SetShaderResourceView("PositionTexture", shaderResourceViewArray[2]);
+//	backBufferVertexShader->SetShader();
+//	backBufferPixelShader->SetShaderResourceView("Texture", shaderResourceViewArray[0]);
+//	backBufferPixelShader->SetSamplerState("Sampler", sampler);
+//	backBufferPixelShader->CopyAllBufferData();
+//	backBufferPixelShader->SetShader();
+//
+//	ID3D11Buffer* nothing = 0;
+//	context->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+//	context->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
+//
+//	 Actually draw exactly 3 vertices
+//	context->Draw(3, 0);
+//
+//	 Unbind the post process texture from input
+//	backBufferPixelShader->SetShaderResourceView("Texture", 0);
 
-	lightPixelShader->SetFloat3("CameraPosition", camera->GetPosition());
+	//for (int i = 0; i < entities.size(); i++)
+	//{
+	//	renderer.SetRenderer(entities[i], camera, vertexBuffer, indexBuffer, vertexShader, pixelShader, context);
+	//}
+	//*/
 
-	lightPixelShader->SetFloat3("pointLightPosition", XMFLOAT3(-3, 0, 0));
-	lightPixelShader->SetFloat4("pointLightColor", XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0));
-
-	lightPixelShader->CopyAllBufferData();
-	lightPixelShader->SetShader();
-
-	context->DrawIndexed(lightEntity->GetMesh()->GetIndexCount(), 0, 0);
-
-	context->OMSetBlendState(NULL, blend, 0xFFFFFFFF);
-
-	//backBufferVertexShader->SetShader();
-	//backBufferPixelShader->SetShaderResourceView("Texture", shaderResourceViewArray[0]);
-	//backBufferPixelShader->SetSamplerState("Sampler", sampler);
-	//backBufferPixelShader->CopyAllBufferData();
-	//backBufferPixelShader->SetShader();
-
-	//ID3D11Buffer* nothing = 0;
-	//context->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
-	//context->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
-
-	//// Actually draw exactly 3 vertices
-	//context->Draw(3, 0);
-
-	//// Unbind the post process texture from input
-	//backBufferPixelShader->SetShaderResourceView("Texture", 0);
-/*
-	for (int i = 0; i < entities.size(); i++)
-	{
-		renderer.SetRenderer(entities[i], camera, vertexBuffer, indexBuffer, vertexShader, pixelShader, context);
-	}
-	*/
+	//renderer.SetRenderer(entities, camera, vertexBuffer, indexBuffer,  context,backBufferRTV,depthStencilView,rasterizer, blendState, &renderTargetViewArray[BUFFER_COUNT], &shaderResourceViewArray[BUFFER_COUNT], deferredVertexShader, deferredPixelShader, lightVertexShader, lightPixelShader, lightEntity);
 
 	swapChain->Present(0, 0);
 }
-
 
 #pragma region Mouse Input
 

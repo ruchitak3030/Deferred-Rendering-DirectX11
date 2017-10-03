@@ -98,7 +98,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 refl = reflect(-dirToPointLight3, input.normal);
 	float spec = pow(max(dot(refl, toCamera), 0), 32);
 
-	float3 toCamera1 = normalize(CameraPosition - input.worldPos);
+	float3 toCamera1 = normalize(CameraPosition - input.worldPo*positions);
 	float3 refl1 = reflect(-dirToPointLight4, input.normal);
 	float spec1 = pow(max(dot(refl1, toCamera1), 0), 32);
 

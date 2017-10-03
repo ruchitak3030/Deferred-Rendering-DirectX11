@@ -27,6 +27,7 @@ public:
 		WPARAM wParam,	// Message's first parameter
 		LPARAM lParam	// Message's second parameter
 		);
+	
 
 	// Internal method for message handling
 	LRESULT ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -50,6 +51,9 @@ public:
 	virtual void OnMouseMove (WPARAM buttonState, int x, int y) { }
 	virtual void OnMouseWheel(float wheelDelta,   int x, int y) { }
 	
+	ID3D11RenderTargetView* backBufferRTV;
+	ID3D11DepthStencilView* depthStencilView;
+
 protected:
 	HINSTANCE	hInstance;		// The handle to the application
 	HWND		hWnd;			// The handle to the window itself
@@ -66,8 +70,7 @@ protected:
 	ID3D11Device*			device;
 	ID3D11DeviceContext*	context;
 
-	ID3D11RenderTargetView* backBufferRTV;
-	ID3D11DepthStencilView* depthStencilView;
+	
 
 	// Helper function for allocating a console window
 	void CreateConsoleWindow(int bufferLines, int bufferColumns, int windowLines, int windowColumns);

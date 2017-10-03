@@ -5,6 +5,7 @@
 
 using namespace DirectX;
 
+
 struct PointLight
 {
 	XMFLOAT4 Color;
