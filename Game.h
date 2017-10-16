@@ -1,6 +1,6 @@
 #pragma once
 const int BUFFER_COUNT = 3;
-#define MAX_LIGHTS 5
+#define MAX_LIGHTS 2
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include <DirectXMath.h>
@@ -40,21 +40,20 @@ private:
 	// Keep track of "stuff" to clean up
 	std::vector<Mesh*> meshes;
 	std::vector<GameEntity*> entities;
-	Camera* camera;
+	std::vector<GameEntity*> lightEntities;
+	Camera* camera;	
 
-	GameEntity* sphere;
-	GameEntity* sphere1;
-	GameEntity* sphere2;
-	GameEntity* sphere3;
-	GameEntity* sphere4;
-	GameEntity* sphere5;
+	GameEntity* lightEntity1;
+	GameEntity* lightEntity2;
+	GameEntity* lightEntity3;
+	GameEntity* lightEntity4;
+	GameEntity* lightEntity5;
+	GameEntity* lightEntity6;
+	GameEntity* lightEntity7;
+	GameEntity* lightEntity8;
 
-	GameEntity* plane1;
-	GameEntity* plane2;
-	GameEntity* plane3;
-	GameEntity* plane4;
-
-	GameEntity* lightEntity;
+	Mesh* sphereMesh;
+	Mesh* planeMesh;
 
 
 	Renderer renderer;
@@ -65,11 +64,15 @@ private:
 	
 
 	// Initialization helper methods - feel free to customize, combine, etc.
-	void LoadShaders(); 
+	
 	void SetDefferedSetup(int textureWidth, int textureHeight);
 	void CreateMatrices();
-	void CreateBasicGeometry();
-	void CreateMaterials();
+	void LoadShaders();
+	void LoadMesh();
+	void LoadTextures();
+	void CreateMaterials();	
+	void CreateBasicGeometry();	
+	void LightEntityInitialize();
 
 	// Texture related DX stuff
 	ID3D11ShaderResourceView* sphereTextureSRV;
@@ -79,10 +82,11 @@ private:
 	ID3D11SamplerState* sampler;
 
 	//RenderTargets for Deferred rendering
-	ID3D11Texture2D* renderTargetTextureArray[BUFFER_COUNT];
+	
 	ID3D11RenderTargetView* renderTargetViewArray[BUFFER_COUNT];
 	ID3D11ShaderResourceView* shaderResourceViewArray[BUFFER_COUNT];
 	ID3D11Texture2D* depthStencilBuffer;
+	ID3D11DepthStencilState* depthState;
 
 	ID3D11RasterizerState* rasterizer;
 	ID3D11BlendState* blendState;
@@ -102,28 +106,21 @@ private:
 	SimplePixelShader* backBufferPixelShader;
 	SimpleVertexShader* lightVertexShader;
 	SimplePixelShader* lightPixelShader;
+	SimpleVertexShader* dirVertexShader;
+	SimplePixelShader* dirPixelShader;
 
 	// The matrices to go from model space to screen space
 	DirectX::XMFLOAT4X4 worldMatrix;
 	DirectX::XMFLOAT4X4 viewMatrix;
 	DirectX::XMFLOAT4X4 projectionMatrix;
 
-	//Lights
-	PointLight pointLight1;
-	PointLight pointLight2;
 	
 
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 
-	//Lights
-	struct Lights
-	{
-		XMFLOAT3 Position;
-		XMFLOAT4 Color;
-	};
 
-	Lights light[MAX_LIGHTS];
+
 };
 

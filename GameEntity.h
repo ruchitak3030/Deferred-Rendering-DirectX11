@@ -8,6 +8,7 @@ class GameEntity
 {
 public:
 	GameEntity(Mesh* mesh, Material* material);
+	GameEntity(Mesh* mesh, DirectX::XMFLOAT3 lightColor);
 	~GameEntity(void);
 
 	void UpdateWorldMatrix();
@@ -22,11 +23,14 @@ public:
 	Mesh* GetMesh() { return mesh; }
 	DirectX::XMFLOAT4X4 GetWorldMatrix() { return worldMatrix; }
 	Material* GetMaterial() { return _material; }
+
+	DirectX::XMFLOAT3 GetLightColor();
+	DirectX::XMFLOAT3 GetPosition();
 private:
 
 	Mesh* mesh;
 	Material* _material;
-
+	DirectX::XMFLOAT3 _lightColor;
 	DirectX::XMFLOAT4X4 worldMatrix;
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;

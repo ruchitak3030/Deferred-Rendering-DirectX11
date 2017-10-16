@@ -12,7 +12,7 @@ Renderer::~Renderer()
 void Renderer::SetLights()
 {
 	pointLight1.SetpointLightValues(XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0), XMFLOAT3(-3, 0, 0));
-	pointLight2.SetpointLightValues(XMFLOAT4(0.5f, 1.0f, 0.5f, 1.0f), XMFLOAT3(3, 0, 0));
+	pointLight2.SetpointLightValues(XMFLOAT4(0.5f, 1.0f, 0.5f, 1.0f	), XMFLOAT3(3, 0, 0));
 	pointLight3.SetpointLightValues(XMFLOAT4(0.3f, 0.0f, 1.0f, 1.0), XMFLOAT3(-1, 1, 0));
 	pointLight4.SetpointLightValues(XMFLOAT4(0.3f, 0.0f, 0.7f, 1.0f), XMFLOAT3(1, 1, 0));
 
@@ -20,111 +20,6 @@ void Renderer::SetLights()
 	spotLight2.SetSpotLightValues(XMFLOAT3(-2, 2, -5), 0.5);
 }
 
-//void Renderer::SetDefferedSetup(int textureWidth, int textureHeight, ID3D11Device* device)
-//{
-//	int i;
-//
-//	D3D11_TEXTURE2D_DESC textureDesc;
-//	ZeroMemory(&textureDesc, sizeof(textureDesc));
-//
-//	textureDesc.Width = textureWidth;
-//	textureDesc.Height = textureHeight;
-//	textureDesc.MipLevels = 1;
-//	textureDesc.ArraySize = 1;
-//	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-//	textureDesc.SampleDesc.Count = 1;
-//	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-//	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-//	textureDesc.CPUAccessFlags = 0;
-//	textureDesc.MiscFlags = 0;
-//	textureDesc.SampleDesc.Quality = 0;
-//
-//	for (i = 0; i < BUFFER_COUNT; i++)
-//	{
-//		device->CreateTexture2D(&textureDesc, NULL, &renderTargetTextureArray[i]);
-//
-//	}
-//
-//	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-//	renderTargetViewDesc.Format = textureDesc.Format;
-//	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-//	renderTargetViewDesc.Texture2D.MipSlice = 0;
-//
-//	//Create Render target view
-//	for (i = 0; i < BUFFER_COUNT; i++)
-//	{
-//		device->CreateRenderTargetView(renderTargetTextureArray[i], &renderTargetViewDesc, &renderTargetViewArray[i]);
-//	}
-//
-//	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-//	//Shader Resource View Description
-//	shaderResourceViewDesc.Format = textureDesc.Format;
-//	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-//	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-//	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-//
-//	for (i = 0; i < BUFFER_COUNT; i++)
-//	{
-//		device->CreateShaderResourceView(renderTargetTextureArray[i], &shaderResourceViewDesc, &shaderResourceViewArray[i]);
-//	}
-//
-//
-//	//Depth Buffer Description
-//	D3D11_TEXTURE2D_DESC depthBufferDesc;
-//	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-//	depthBufferDesc.Width = textureWidth;
-//	depthBufferDesc.Height = textureHeight;
-//	depthBufferDesc.MipLevels = 1;
-//	depthBufferDesc.ArraySize = 1;
-//	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-//	depthBufferDesc.SampleDesc.Count = 1;
-//	depthBufferDesc.SampleDesc.Quality = 0;
-//	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-//	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-//	depthBufferDesc.CPUAccessFlags = 0;
-//	depthBufferDesc.MiscFlags = 0;
-//
-//	device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
-//
-//	//Depth Stencil Description
-//	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-//	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-//	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-//	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-//	depthStencilViewDesc.Texture2D.MipSlice = 0;
-//
-//	device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &dx->depthStencilView);
-//
-//
-//	//Rasterizer setup
-//	D3D11_RASTERIZER_DESC rasterizerDesc;
-//	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
-//	rasterizerDesc.CullMode = D3D11_CULL_NONE;
-//	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-//	rasterizerDesc.DepthClipEnable = false;
-//
-//	device->CreateRasterizerState(&rasterizerDesc, &rasterizer);
-//
-//	//Blend state setup
-//	D3D11_BLEND_DESC blendDesc;
-//	ZeroMemory(&blendDesc, sizeof(blendDesc));
-//	blendDesc.AlphaToCoverageEnable = false;
-//	blendDesc.IndependentBlendEnable = false;
-//	blendDesc.RenderTarget[0].BlendEnable = true;
-//	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-//	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-//	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-//	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-//	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-//	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-//	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-//
-//	device->CreateBlendState(&blendDesc, &blendState);
-//
-//
-//
-//
-//}
 
 //void Renderer::SetRenderer(std::vector<GameEntity*> entities, Camera* &camera, ID3D11Buffer* vb, ID3D11Buffer* ib, ID3D11DeviceContext* context, ID3D11RenderTargetView* backBufferRTV, ID3D11DepthStencilView* depthStencilView, ID3D11RasterizerState* rasterizer, ID3D11BlendState* blendState, ID3D11RenderTargetView* renderTargetViewArray[BUFFER_COUNT], ID3D11ShaderResourceView* shaderResourceViewArray[BUFFER_COUNT], SimpleVertexShader* &deferredVS, SimplePixelShader* &deferredPS, SimpleVertexShader* &lightVS, SimplePixelShader* &lightPS, GameEntity* lightEntity)
 //{

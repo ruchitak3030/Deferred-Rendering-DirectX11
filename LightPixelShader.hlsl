@@ -2,19 +2,15 @@ Texture2D Texture							: register(t0);
 Texture2D NormalMap							: register(t1);
 Texture2D PositionTexture					: register(t2);
 
+SamplerState basicSampler : register(s0);
 
-struct PointLight
-{
-	float4 Color;
-	float3 Position;
-};
 cbuffer LightData		: register(b0)
 {
-	float4 Color;
-	float3 Position;
-	/*PointLight pointLight1;
-	PointLight pointLight2;
-	*/
+	float3 cameraPosition;
+	float3 lightColor;
+	float3 lightPosition;
+	
+	
 }
 
 struct VertexToPixel
@@ -23,27 +19,40 @@ struct VertexToPixel
 
 };
 
-float4 main(VertexToPixel input) : SV_TARGET0
+float4 main(in VertexToPixel input) : SV_TARGET0
 {
-	float3 normal;
-    float3 position;
-	float3 diffuse;
 
 	int3 sampleIndices = int3(input.position.xy, 0);
 
-	normal = NormalMap.Load(sampleIndices).xyz;
-	position = PositionTexture.Load(sampleIndices).xyz;
-	diffuse = Texture.Load(sampleIndices).xyz;
+	float3 normal = NormalMap.Load(sampleIndices).xyz;
+	float3 position = PositionTexture.Load(sampleIndices).xyz;
+	float3 diffuse = Texture.Load(sampleIndices).xyz;
 
-	//Point Light calculation
-	float3 dirToPointLight = normalize(Position - position);
-	float pointLightAmount = saturate(dot(normal, dirToPointLight));
+	float3 L = lightPosition - position;
+	float dist = length(L);
 
-	/*float3 dirToPointLight1 = normalize(pointLight2.Position - position);
-	float pointLightAmount1 = saturate(dot(normal, dirToPointLight1));
+	if (dist > 2.0f)
+	{
+		return float4(0.0f, 0.0f, 0.0f, 0.0f);
+	}
 
-	float3 pointLight = (pointLightAmount * pointLight1.Color * diffuse) + (pointLightAmount1 * pointLight2.Color * diffuse);*/
+	L /= dist;
+
+	float att = max(0.0f, 1.0f - (dist / 2.0f));
+
+	float lightAmount = saturate(dot(normal, L));
+	float3 color = lightAmount * lightColor * att;
+
+	//Specular calc
+	float3 V = cameraPosition - position;
+	float3 H = normalize(L + V);
+	float specular = pow(saturate(dot(normal, H)), 10) * att;
+
+	float3 finalDiffuse = color * diffuse;
+	float3 finalSpecular = specular * diffuse * att;
+
+	float4 totalColor = float4(finalDiffuse + finalSpecular, 1.0f);
+	return totalColor;
+
 	
-
-	return float4(pointLightAmount * Color * diffuse, 1.0f);
 }
